@@ -32,10 +32,7 @@ class Seq2SeqBase(object):
         loss = crossentropy(targets, logits, sample_weight=mask)
         return loss
 
-    def train_step(self, source_seq, target_seq_in, target_seq_out, en_initial_states, batch_size):
-        if source_seq.shape[0] != batch_size:
-            print('Not enough samples for that epoch')
-            return
+    def train_step(self, source_seq, target_seq_in, target_seq_out, en_initial_states):
         with tf.GradientTape() as tape:
             en_outputs = self.encoder(source_seq, en_initial_states)
             en_states = en_outputs[1:]
@@ -59,9 +56,11 @@ class Seq2SeqBase(object):
         for e in range(self.epochs):
             inp_initial_states = self.encoder.init_states(batch_size)
             for batch, (source_seq, target_seq_in, target_seq_out) in enumerate(data_set.take(-1)):
-                print('Epoch %d    Step %d' % (e, batch))
-                loss = self.train_step(source_seq, target_seq_in, target_seq_out, inp_initial_states, batch_size)
-
+                if source_seq.shape[0] != batch_size:
+                    print('Not enough samples for that epoch')
+                    break
+                loss = self.train_step(source_seq, target_seq_in, target_seq_out, inp_initial_states)
+                print('Epoch {:02}   Step {:02}   Loss {:.4f}'.format(e, batch, loss))
             print('Epoch {} Loss {:.4f}'.format(e + 1, loss.numpy()))
 
     def predict(self, text):
