@@ -50,3 +50,10 @@ def load_preprocessed_data():
     trg = pickle.load(open(constants.TRG_PADDED_FILE, 'rb'))
     print('Input and target loaded.')
     return inp, trg
+
+
+def load_dataset():
+    print('Loading data set...')
+    data_set = pickle.load(open(constants.DATASET_FILE_PATH, 'rb'))
+    print('Dataset loaded.')
+    return data_set

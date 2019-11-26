@@ -1,6 +1,12 @@
 DATA_FILE = './data/fra-eng.txt'
+DATA_SET_PATH = './data/dataset.pickle'
 
 CONFIG_FILE_PATH = './data/config.pickle'
+DATASET_FILE_PATH = './data/dataset.pickle'
+
+INPUT_PROCESSED_DATA_PATH = './data/input_processed.pickle'
+TARGET_INPUT_PROCESSED_DATA_PATH = './data/target_input_processed.pickle'
+TARGET_PROCESSED_DATA_PATH = './data/target_processed.pickle'
 
 WORKING_SAMPLES = 30000
 
