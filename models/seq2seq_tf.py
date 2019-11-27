@@ -60,7 +60,8 @@ class Seq2SeqBase(object):
                     print('Not enough samples for that epoch')
                     break
                 loss = self.train_step(source_seq, target_seq_in, target_seq_out, inp_initial_states)
-                print('Epoch {:02}   Step {:02}   Loss {:.4f}'.format(e, batch, loss))
+                if (batch + 1) % 100 == 0:
+                    print('Epoch {:02}   Step {:02}   Loss {:.4f}'.format(e, batch, loss))
             print('Epoch {} Loss {:.4f}'.format(e + 1, loss.numpy()))
 
     def predict(self, text):
