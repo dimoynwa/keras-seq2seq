@@ -1,5 +1,5 @@
 import tensorflow as tf
-from models.attentions import LuongAttention
+from models.attentions import LuongAttention, BahdanauAttention
 
 
 class Encoder(tf.keras.Model):
@@ -66,3 +66,30 @@ class DecoderLuong(tf.keras.Model):
         logits = self.dense(lstm_out)
 
         return logits, state_h, state_c, alignment
+
+
+class BahdanauDecoder(tf.keras.Model):
+    def __init__(self, vocab_size, embedding_size, lstm_size):
+        self.vocab_size = vocab_size
+        self.embedding_size = embedding_size
+        self.lstm_size = lstm_size
+
+        self.embedding_layer = tf.keras.layers.Embedding(vocab_size, embedding_size)
+        self.lstm_layer = tf.keras.layers.LSTM(lstm_size, return_state=True, return_sequences=True)
+        self.attention = BahdanauAttention(lstm_size)
+        self.dense = tf.keras.layers.Dense(vocab_size)
+
+    def call(self, seq, state, enc_output):
+        # enc_output shape == (batch_size, max_length, hidden_size)
+        context_vector, attention_weights = self.attention(state, enc_output)
+
+        seq = self.embedding_layer(seq)
+
+        seq = tf.concat([tf.expand_dims(context_vector, 1), seq], axis=-1)
+
+        seq, _, _ = self.lstm_layer(seq)
+        output = tf.reshape(seq, (-1, seq.shape[2]))
+
+        x = self.dense(output)
+
+        return x, context_vector, attention_weights
